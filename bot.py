@@ -5,7 +5,7 @@ token = open(".token").read()
 
 client = discord.Client()
 
-open_rounds = {} # dict from (guild_name, channel_name) to bool
+open_rounds = {} # dict from (guild_name, channel_name) to (user_mention, moves) or None
 
 async def start_countdown(channel, minutes):
     countdown = await channel.send("Time left: %d minutes" % minutes)
@@ -41,11 +41,23 @@ async def on_message(message):
             return
         await start_countdown(channel, minutes)
     if message.content == "-round":
-        await channel.send("@here New round!")
-        open_rounds[round_marker] = True
-    if message.content.isnumeric() and open_rounds.get(round_marker, False):
-        del open_rounds[round_marker]
-        await start_countdown(channel, minutes=1)
+        await channel.send("@ here New round!")
+        open_rounds[round_marker] = None
+    if message.content.isnumeric():
+        if round_marker not in open_rounds:
+            return
+        moves = int(message.content)
+        open_round = open_rounds[round_marker]
+        if open_round is None:
+            open_rounds[round_marker] = (message.author.mention, moves)
+            await start_countdown(channel, minutes=1)
+            best_user_mention, best_moves = open_rounds[round_marker]
+            await channel.send("%s, show us your %d moves!" % (best_user_mention, best_moves))
+            del open_rounds[round_marker]
+        else:
+            previous_user_mention, previous_moves = open_round
+            if moves < previous_moves:
+                open_rounds[round_marker] = (message.author.mention, moves)
     # await channel.send(message.content)
 
 client.run(token)
