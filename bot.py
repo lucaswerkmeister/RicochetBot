@@ -7,6 +7,19 @@ client = discord.Client()
 
 open_rounds = {} # dict from (guild_name, channel_name) to (user_mention, moves) or None
 
+async def play_audio(voice_channel, audio_source):
+    future = asyncio.get_event_loop().create_future()
+    def after_play(error):
+        if error:
+            future.set_exception(error)
+        else:
+            future.set_result(None)
+    audio = await discord.FFmpegOpusAudio.from_probe(audio_source)
+    connection = await voice_channel.connect()
+    connection.play(audio, after=after_play)
+    await future
+    await connection.disconnect()
+
 async def start_countdown(channel, minutes):
     countdown = await channel.send("Time left: %d minutes" % minutes)
     edit = asyncio.sleep(0)
@@ -54,7 +67,10 @@ async def on_message(message):
         except ValueError:
             await channel.send("Invalid duration (in minutes)!")
             return
+        voice_channel = message.author.voice and message.author.voice.channel
         await start_countdown(channel, minutes)
+        if voice_channel:
+            await play_audio(voice_channel, "countdown-stop.mp3")
     if message.content == "-round":
         await channel.send("@ here New round!")
         open_rounds[round_marker] = None
