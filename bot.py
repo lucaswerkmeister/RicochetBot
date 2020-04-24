@@ -8,6 +8,7 @@ client = discord.Client()
 open_rounds = {} # dict from (guild_name, channel_name) to (user_mention, moves) or None
 
 async def play_audio(voice_channel, audio_source):
+    """Join voice_channel, play audio_source, disconnect again."""
     future = asyncio.get_event_loop().create_future()
     def after_play(error):
         if error:
@@ -21,6 +22,8 @@ async def play_audio(voice_channel, audio_source):
     await connection.disconnect()
 
 async def start_countdown(channel, minutes):
+    """Send a countdown message (updated each minute)
+    and another one when the countdown finishes."""
     countdown = await channel.send("Time left: %d minutes" % minutes)
     edit = asyncio.sleep(0)
     while minutes > 0:
@@ -33,6 +36,8 @@ async def start_countdown(channel, minutes):
     await channel.send("Time’s up!")
 
 async def countdown_seconds(channel, seconds):
+    """Send a countdown message (updated each second)
+    and another one when the countdown finishes."""
     countdown = await channel.send("Time left: %d seconds" % seconds)
     edit = asyncio.sleep(0)
     while seconds > 0:
@@ -45,13 +50,8 @@ async def countdown_seconds(channel, seconds):
     await channel.send("Time’s up!")
 
 @client.event
-async def on_ready():
-    guild = discord.utils.get(client.guilds, name="Auregann's salon")
-    channel = discord.utils.get(guild.channels, name='tests')
-    # await channel.send("Hello, World!")
-
-@client.event
 async def on_message(message):
+    """React to a message. Main bot logic."""
     global open_rounds
     guild = message.guild
     channel = message.channel
