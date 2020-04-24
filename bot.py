@@ -9,10 +9,13 @@ open_rounds = {} # dict from (guild_name, channel_name) to (user_mention, moves)
 
 async def start_countdown(channel, minutes):
     countdown = await channel.send("Time left: %d minutes" % minutes)
+    edit = asyncio.sleep(0)
     while minutes > 0:
-        await asyncio.sleep(60) # TODO timer skew from also awaiting countdown.edit() below
+        sleep = asyncio.sleep(60)
+        await asyncio.gather(sleep, edit)
         minutes -= 1
-        await countdown.edit(content="Time left: %d minutes" % minutes)
+        edit = countdown.edit(content="Time left: %d minutes" % minutes)
+    await edit
     await countdown.edit(content="Time’s up!")
     await channel.send("Time’s up!")
 
