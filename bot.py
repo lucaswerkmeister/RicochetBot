@@ -21,7 +21,7 @@ async def play_audio(voice_channel, audio_source):
     await future
     await connection.disconnect()
 
-async def start_countdown(channel, minutes):
+async def countdown_minutes(channel, minutes):
     """Send a countdown message (updated each minute)
     and another one when the countdown finishes."""
     countdown = await channel.send("Time left: %d minutes" % minutes)
@@ -68,7 +68,7 @@ async def on_message(message):
             await channel.send("Invalid duration (in minutes)!")
             return
         voice_channel = message.author.voice and message.author.voice.channel
-        await start_countdown(channel, minutes)
+        await countdown_minutes(channel, minutes)
         if voice_channel:
             await play_audio(voice_channel, "countdown-stop.mp3")
     if message.content == "-round":
