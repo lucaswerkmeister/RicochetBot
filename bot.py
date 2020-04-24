@@ -43,7 +43,7 @@ async def on_message(message):
     if message.content == "-round":
         await channel.send("@ here New round!")
         open_rounds[round_marker] = None
-    if message.content.isnumeric():
+    if message.content.isnumeric() and message.content.isascii():
         if round_marker not in open_rounds:
             return
         moves = int(message.content)
