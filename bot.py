@@ -16,6 +16,18 @@ async def start_countdown(channel, minutes):
     await countdown.edit(content="Time’s up!")
     await channel.send("Time’s up!")
 
+async def countdown_seconds(channel, seconds):
+    countdown = await channel.send("Time left: %d seconds" % seconds)
+    edit = asyncio.sleep(0)
+    while seconds > 0:
+        sleep = asyncio.sleep(1)
+        await asyncio.gather(sleep, edit)
+        seconds -= 1
+        edit = countdown.edit(content="Time left: %d seconds" % seconds)
+    await edit
+    await countdown.edit(content="Time’s up!")
+    await channel.send("Time’s up!")
+
 @client.event
 async def on_ready():
     guild = discord.utils.get(client.guilds, name="Auregann's salon")
@@ -50,7 +62,7 @@ async def on_message(message):
         open_round = open_rounds[round_marker]
         if open_round is None:
             open_rounds[round_marker] = (message.author.mention, moves)
-            await start_countdown(channel, minutes=1)
+            await countdown_seconds(channel, seconds=60)
             best_user_mention, best_moves = open_rounds[round_marker]
             await channel.send("%s, show us your %d moves!" % (best_user_mention, best_moves))
             del open_rounds[round_marker]
