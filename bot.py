@@ -49,6 +49,9 @@ async def countdown_seconds(channel, seconds):
     await countdown.edit(content="Time’s up!")
     await channel.send("Time’s up!")
 
+def user_voice_channel(user):
+    return user.voice and user.voice.channel
+
 @client.event
 async def on_message(message):
     """React to a message. Main bot logic."""
@@ -67,7 +70,7 @@ async def on_message(message):
         except ValueError:
             await channel.send("Invalid duration (in minutes)!")
             return
-        voice_channel = message.author.voice and message.author.voice.channel
+        voice_channel = user_voice_channel(message.author)
         await countdown_minutes(channel, minutes)
         if voice_channel:
             await play_audio(voice_channel, "countdown-stop.mp3")
