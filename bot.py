@@ -25,12 +25,13 @@ async def on_message(message):
         except ValueError:
             await channel.send("Invalid duration (in minutes)!")
             return
-        countdown = await channel.send(content="Time left: %d minutes" % minutes)
+        countdown = await channel.send("Time left: %d minutes" % minutes)
         while minutes > 0:
             await asyncio.sleep(60) # TODO timer skew from also awaiting countdown.edit() below
             minutes -= 1
             await countdown.edit(content="Time left: %d minutes" % minutes)
         await countdown.edit(content="Time’s up!")
+        await channel.send("Time’s up!")
     # await channel.send(message.content)
 
 client.run(token)
