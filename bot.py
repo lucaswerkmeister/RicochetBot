@@ -61,8 +61,6 @@ async def on_message(message):
     round_marker = (guild.name, channel.name)
     if message.author == client.user:
         return
-    if channel.name != "tests":
-        return
     if message.content.startswith("-timer "):
         arg = message.content[len("-timer "):]
         try:
@@ -75,7 +73,7 @@ async def on_message(message):
         if voice_channel:
             await play_audio(voice_channel, "countdown-stop.mp3")
     if message.content == "-round":
-        await channel.send("@ here New round!")
+        await channel.send("%s New round!" % ("@ here" if channel.name == "tests" else "@here"))
         open_rounds[round_marker] = (user_voice_channel(message.author), None, None)
     if message.content.isnumeric() and message.content.isascii():
         if round_marker not in open_rounds:
