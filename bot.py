@@ -79,6 +79,8 @@ async def on_message(message):
         if round_marker not in open_rounds:
             return
         moves = int(message.content)
+        if moves < 1:
+            return
         voice_channel, previous_user_mention, previous_moves = open_rounds[round_marker]
         if previous_moves is None:
             open_rounds[round_marker] = (voice_channel, message.author.mention, moves)
