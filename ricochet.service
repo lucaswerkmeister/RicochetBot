@@ -1,0 +1,12 @@
+[Unit]
+Description=Ricochet Robots bot
+Documentation=https://github.com/lucaswerkmeister/RicochetBot
+
+[Service]
+ExecStart=/bin/bash -c 'source venv/bin/activate && exec python bot.py'
+WorkingDirectory=/home/ricochet/bot
+DynamicUser=yes
+SyslogIdentifier=ricochet
+
+[Install]
+WantedBy=multi-user.target
