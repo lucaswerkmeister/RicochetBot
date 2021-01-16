@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import os
 
 token = open(".token").read()
 
@@ -9,6 +10,8 @@ open_rounds = {} # dict from (guild_name, channel_name) to ([voice_channel], [us
 
 async def play_audio(voice_channel, audio_source):
     """Join voice_channel, play audio_source, disconnect again."""
+    if 'RICOCHETBOT_SKIP_AUDIO' in os.environ:
+        return
     future = asyncio.get_event_loop().create_future()
     def after_play(error):
         if error:
