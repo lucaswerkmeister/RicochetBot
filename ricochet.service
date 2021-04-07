@@ -1,6 +1,8 @@
 [Unit]
 Description=Ricochet Robots bot
 Documentation=https://github.com/lucaswerkmeister/RicochetBot
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 ExecStart=/bin/bash -c 'source venv/bin/activate && exec python bot.py'
